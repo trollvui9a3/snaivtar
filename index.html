@@ -2,9 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-
-<title>bấm zô đi eiu</title>
+<title>Happy Birthday 🎂</title>
 
 <style>
 body {
@@ -18,19 +16,50 @@ body {
   position: fixed;
   inset: 0;
   background: url("bg.jpg") center/cover no-repeat;
-  filter: blur(5px);
-  pointer-events: none; /* 🔥 quan trọng */
+  filter: blur(6px) brightness(0.8);
+  z-index: 0;
 }
 
 /* mèo */
 .cat {
   position: fixed;
-  top: 60%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 220px;
-  z-index: 10;
+  width: 150px;
   cursor: pointer;
+  z-index: 10;
+  transition: 0.2s;
+}
+
+/* 🆕 bong bóng */
+.bubble {
+  position: fixed;
+  background: white;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: 0.3s;
+  z-index: 15;
+}
+
+.bubble.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 10px solid transparent;
+  border-top-color: white;
 }
 
 /* thư */
@@ -38,23 +67,26 @@ body {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) scale(0.8);
-
-  width: 300px;
-  height: 200px;
-  background: white;
+  transform: translate(-50%, -50%) scale(0);
+  width: 320px;
+  height: 220px;
+  background: url("thu.png") center/cover no-repeat;
+  border-radius: 20px;
+  box-shadow: 0 0 40px rgba(0,0,0,0.6);
 
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  text-align: center;
 
-  opacity: 0;
-  transition: 0.3s;
+  padding: 20px;
+  font-size: 18px;
+
   z-index: 20;
+  transition: 0.4s;
 }
 
 .letter.show {
-  opacity: 1;
   transform: translate(-50%, -50%) scale(1);
 }
 
@@ -66,14 +98,35 @@ body {
   background: pink;
   border-radius: 50%;
   pointer-events: none;
+  z-index: 5;
+}
+
+/* hoa rơi */
+.fall {
+  animation: fall linear forwards;
+}
+
+@keyframes fall {
+  from {
+    transform: translateY(-20px) rotate(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(110vh) rotate(360deg);
+    opacity: 0;
+  }
 }
 
 /* hoa bung */
 .burst {
-  animation: burst 0.8s forwards;
+  animation: burst 1s ease forwards;
 }
 
 @keyframes burst {
+  from {
+    transform: translate(0,0);
+    opacity: 1;
+  }
   to {
     transform: translate(var(--x), var(--y));
     opacity: 0;
@@ -86,58 +139,89 @@ body {
 
 <div class="bg"></div>
 
-<img src="cat.png" id="cat" class="cat">
+<img src="cat.png" class="cat" id="cat">
 
-<div id="letter" class="letter">
-  💖 Chúc mừng sinh nhật 💖
+<!-- 🆕 bong bóng -->
+<div id="bubble" class="bubble">Bấm tui đi 😳</div>
+
+<div class="letter" id="letter">
+  Chúc mừng sinh nhật 🎉💖
 </div>
+
+<audio id="music" src="nhac.mp3"></audio>
 
 <script>
 let count = 0;
-
 const cat = document.getElementById("cat");
 const letter = document.getElementById("letter");
+const music = document.getElementById("music");
+const bubble = document.getElementById("bubble");
 
-/* CLICK HANDLER */
-function handleTap(e) {
-  e.preventDefault(); // 🔥 fix mobile
+/* 📍 vị trí bong bóng */
+function updateBubble() {
+  let rect = cat.getBoundingClientRect();
+  bubble.style.top = (rect.top - 60) + "px";
+  bubble.style.left = (rect.left + rect.width/2 - 50) + "px";
+}
 
+/* hiện bubble */
+window.onload = () => {
+  updateBubble();
+  bubble.classList.add("show");
+};
+
+/* hoa rơi */
+setInterval(() => {
+  let sakura = document.createElement("div");
+  sakura.className = "sakura fall";
+
+  sakura.style.left = Math.random() * window.innerWidth + "px";
+  sakura.style.animationDuration = (6 + Math.random() * 5) + "s";
+
+  document.body.appendChild(sakura);
+  setTimeout(() => sakura.remove(), 7000);
+}, 400);
+
+/* click mèo */
+cat.addEventListener("click", () => {
   count++;
 
-  // mèo co lại
   cat.style.transform = "translate(-50%, -50%) scale(0.9)";
   setTimeout(() => {
     cat.style.transform = "translate(-50%, -50%) scale(1)";
   }, 100);
 
-  // lấy vị trí mèo
+  updateBubble();
+
+  if (count === 1) bubble.innerText = "Ê nhẹ thôi 😠";
+  if (count === 3) bubble.innerText = "Nữa đi 😏";
+  if (count === 5) bubble.innerText = "Mở quà 💌";
+
   let rect = cat.getBoundingClientRect();
 
-  // hoa bung
-  for (let i = 0; i < 10; i++) {
-    let s = document.createElement("div");
-    s.className = "sakura burst";
+  for (let i = 0; i < 20; i++) {
+    let sakura = document.createElement("div");
+    sakura.className = "sakura burst";
 
-    s.style.left = rect.left + rect.width/2 + "px";
-    s.style.top = rect.top + rect.height/2 + "px";
+    sakura.style.left = rect.left + rect.width/2 + "px";
+    sakura.style.top = rect.top + rect.height/2 + "px";
 
-    s.style.setProperty("--x", (Math.random()-0.5)*200 + "px");
-    s.style.setProperty("--y", (Math.random()-0.5)*200 + "px");
+    let x = (Math.random() - 0.5) * 300;
+    let y = (Math.random() - 0.5) * 300;
 
-    document.body.appendChild(s);
-    setTimeout(() => s.remove(), 800);
+    sakura.style.setProperty("--x", x + "px");
+    sakura.style.setProperty("--y", y + "px");
+
+    document.body.appendChild(sakura);
+    setTimeout(() => sakura.remove(), 1000);
   }
 
-  // hiện thư
+  music.play();
+
   if (count >= 5) {
     letter.classList.add("show");
   }
-}
-
-/* 🔥 MOBILE + PC */
-cat.addEventListener("touchstart", handleTap, { passive: false });
-cat.addEventListener("click", handleTap);
-
+});
 </script>
 
 </body>
