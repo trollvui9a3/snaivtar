@@ -12,6 +12,7 @@
 body {
   margin: 0;
   overflow: hidden;
+  font-family: 'Patrick Hand', cursive;
 }
 
 /* nền */
@@ -20,6 +21,7 @@ body {
   inset: 0;
   background: url("bg.jpg") center/cover no-repeat;
   filter: blur(6px) brightness(0.8);
+  z-index: 0;
 }
 
 /* mèo */
@@ -28,10 +30,43 @@ body {
   top: 60%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 220px;
+  width: clamp(180px, 40vw, 260px);
   cursor: pointer;
   z-index: 10;
-  transition: 0.2s;
+  transition: 0.15s;
+}
+
+/* bong bóng */
+.bubble {
+  position: fixed;
+  background: white;
+  padding: 10px 15px;
+  border-radius: 20px;
+  font-size: 16px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  border: 2px solid black;
+
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: 0.3s;
+
+  z-index: 15;
+}
+
+.bubble.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 12px;
+  border-style: solid;
+  border-color: white transparent transparent transparent;
 }
 
 /* thư */
@@ -40,18 +75,20 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) scale(0.8);
-  width: 80vw;
-  max-width: 400px;
-  height: 200px;
-  background: white;
-  border-radius: 15px;
+
+  width: clamp(260px, 85vw, 500px);
+  height: clamp(180px, 50vh, 400px);
+
+  background: url("thu.png") center/cover no-repeat;
+  border-radius: 20px;
 
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
 
-  font-family: 'Patrick Hand', cursive;
+  padding: 20px;
+  font-size: clamp(14px, 4vw, 20px);
 
   opacity: 0;
   transition: 0.4s;
@@ -71,19 +108,23 @@ body {
   background: pink;
   border-radius: 50%;
   pointer-events: none;
+  z-index: 5;
 }
 
+/* hoa rơi */
 .fall {
   animation: fall linear forwards;
 }
 
 @keyframes fall {
+  from { transform: translateY(-20px); }
   to {
-    transform: translateY(100vh);
+    transform: translateY(110vh);
     opacity: 0;
   }
 }
 
+/* hoa bung */
 .burst {
   animation: burst 1s ease forwards;
 }
@@ -103,32 +144,103 @@ body {
 
 <img src="cat.png" id="cat" class="cat">
 
+<div id="bubble" class="bubble">Bấm tui đi 😳</div>
+
 <div id="letter" class="letter">
-  Chúc mừng sinh nhật 🎉💖
+  Chúc eiu sinh nhật vui vẻ 💖<br>
+  I love you 😘
 </div>
+
+<audio id="music" src="nhac.mp3"></audio>
 
 <script>
 let count = 0;
 
 const cat = document.getElementById("cat");
+const bubble = document.getElementById("bubble");
 const letter = document.getElementById("letter");
+const music = document.getElementById("music");
 
-/* kiểm tra click */
-cat.addEventListener("click", function() {
+/* cập nhật vị trí bong bóng */
+function updateBubble() {
+  const rect = cat.getBoundingClientRect();
+
+  bubble.style.top = (rect.top - 70) + "px";
+  bubble.style.left = (rect.left + rect.width/2 - 60) + "px";
+}
+
+/* load */
+window.addEventListener("load", () => {
+  updateBubble();
+  bubble.classList.add("show");
+});
+
+/* hoa rơi nền */
+setInterval(() => {
+  const sakura = document.createElement("div");
+  sakura.className = "sakura fall";
+
+  sakura.style.left = Math.random() * document.documentElement.clientWidth + "px";
+  sakura.style.animationDuration = (5 + Math.random() * 3) + "s";
+
+  document.body.appendChild(sakura);
+
+  setTimeout(() => sakura.remove(), 6000);
+}, 400);
+
+/* click mèo */
+cat.addEventListener("click", () => {
+  count++;
   console.log("click ok");
 
-  count++;
-
-  // animation mèo
+  /* animation mèo */
   cat.style.transform = "translate(-50%, -50%) scale(0.9)";
   setTimeout(() => {
     cat.style.transform = "translate(-50%, -50%) scale(1)";
   }, 100);
 
-  // hoa bung
-  let rect = cat.getBoundingClientRect();
+  updateBubble();
+
+  /* đổi text */
+  if (count === 1) bubble.innerText = "Ê nhẹ thôi 😠";
+  if (count === 3) bubble.innerText = "Nữa đi nữa đi 😏";
+  if (count === 5) bubble.innerText = "Mở quà nè 💌";
+
+  /* hoa bung */
+  const rect = cat.getBoundingClientRect();
 
   for (let i = 0; i < 15; i++) {
+    const sakura = document.createElement("div");
+    sakura.className = "sakura burst";
+
+    sakura.style.left = rect.left + rect.width/2 + "px";
+    sakura.style.top = rect.top + rect.height/2 + "px";
+
+    const x = (Math.random() - 0.5) * 250;
+    const y = (Math.random() - 0.5) * 250;
+
+    sakura.style.setProperty("--x", x + "px");
+    sakura.style.setProperty("--y", y + "px");
+
+    document.body.appendChild(sakura);
+
+    setTimeout(() => sakura.remove(), 1000);
+  }
+
+  /* hiện thư */
+  if (count >= 5) {
+    letter.classList.add("show");
+  }
+
+  /* phát nhạc */
+  if (count === 5) {
+    music.play().catch(() => {});
+  }
+});
+</script>
+
+</body>
+</html>  for (let i = 0; i < 15; i++) {
     let sakura = document.createElement("div");
     sakura.className = "sakura burst";
 
