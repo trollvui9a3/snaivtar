@@ -21,7 +21,6 @@ body {
   inset: 0;
   background: url("bg.jpg") center/cover no-repeat;
   filter: blur(6px) brightness(0.8);
-  z-index: 0;
 }
 
 /* mèo */
@@ -32,8 +31,8 @@ body {
   transform: translate(-50%, -50%);
   width: clamp(180px, 40vw, 260px);
   cursor: pointer;
-  z-index: 10;
-  transition: 0.15s;
+  z-index: 100;
+  transition: transform 0.15s;
 }
 
 /* bong bóng */
@@ -43,14 +42,13 @@ body {
   padding: 10px 15px;
   border-radius: 20px;
   font-size: 16px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
   border: 2px solid black;
 
   opacity: 0;
   transform: translateY(-10px);
   transition: 0.3s;
 
-  z-index: 15;
+  z-index: 90;
 }
 
 .bubble.show {
@@ -64,9 +62,8 @@ body {
   bottom: -12px;
   left: 50%;
   transform: translateX(-50%);
-  border-width: 12px;
-  border-style: solid;
-  border-color: white transparent transparent transparent;
+  border: 12px solid transparent;
+  border-top-color: white;
 }
 
 /* thư */
@@ -77,9 +74,9 @@ body {
   transform: translate(-50%, -50%) scale(0.8);
 
   width: clamp(260px, 85vw, 500px);
-  height: clamp(180px, 50vh, 400px);
+  height: 200px;
 
-  background: url("thu.png") center/cover no-repeat;
+  background: white;
   border-radius: 20px;
 
   display: flex;
@@ -88,11 +85,11 @@ body {
   text-align: center;
 
   padding: 20px;
-  font-size: clamp(14px, 4vw, 20px);
+  font-size: 18px;
 
   opacity: 0;
   transition: 0.4s;
-  z-index: 20;
+  z-index: 200;
 }
 
 .letter.show {
@@ -102,6 +99,136 @@ body {
 
 /* hoa */
 .sakura {
+  position: fixed;
+  top: -20px;
+  width: 10px;
+  height: 10px;
+  background: pink;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 50;
+}
+
+/* rơi */
+.fall {
+  animation: fall linear forwards;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(110vh);
+    opacity: 0;
+  }
+}
+
+/* bung */
+.burst {
+  animation: burst 0.8s ease forwards;
+}
+
+@keyframes burst {
+  from {
+    transform: translate(0,0);
+    opacity: 1;
+  }
+  to {
+    transform: translate(var(--x), var(--y));
+    opacity: 0;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="bg"></div>
+
+<img src="cat.png" id="cat" class="cat">
+
+<div id="bubble" class="bubble">Bấm tui đi 😳</div>
+
+<div id="letter" class="letter">
+  💖 Chúc mừng sinh nhật 💖
+</div>
+
+<script>
+let count = 0;
+
+const cat = document.getElementById("cat");
+const bubble = document.getElementById("bubble");
+const letter = document.getElementById("letter");
+
+/* cập nhật bong bóng */
+function updateBubble() {
+  const rect = cat.getBoundingClientRect();
+
+  bubble.style.top = (rect.top - 70) + "px";
+  bubble.style.left = (rect.left + rect.width/2 - 60) + "px";
+}
+
+/* load */
+window.addEventListener("load", () => {
+  updateBubble();
+  bubble.classList.add("show");
+});
+
+/* hoa rơi */
+setInterval(() => {
+  const sakura = document.createElement("div");
+  sakura.className = "sakura fall";
+
+  sakura.style.left = Math.random() * document.documentElement.clientWidth + "px";
+  sakura.style.animationDuration = (4 + Math.random() * 3) + "s";
+
+  document.body.appendChild(sakura);
+
+  setTimeout(() => sakura.remove(), 6000);
+}, 300);
+
+/* click mèo */
+cat.addEventListener("click", () => {
+  count++;
+
+  // animation mèo
+  cat.style.transform = "translate(-50%, -50%) scale(0.9)";
+  setTimeout(() => {
+    cat.style.transform = "translate(-50%, -50%) scale(1)";
+  }, 100);
+
+  updateBubble();
+
+  // text
+  if (count === 1) bubble.innerText = "Ê nhẹ thôi 😠";
+  if (count === 3) bubble.innerText = "Nữa đi nữa đi 😏";
+  if (count === 5) bubble.innerText = "Mở quà nè 💌";
+
+  // hoa bung
+  const rect = cat.getBoundingClientRect();
+
+  for (let i = 0; i < 12; i++) {
+    const sakura = document.createElement("div");
+    sakura.className = "sakura burst";
+
+    sakura.style.left = rect.left + rect.width/2 + "px";
+    sakura.style.top = rect.top + rect.height/2 + "px";
+
+    sakura.style.setProperty("--x", (Math.random()-0.5)*200 + "px");
+    sakura.style.setProperty("--y", (Math.random()-0.5)*200 + "px");
+
+    document.body.appendChild(sakura);
+
+    setTimeout(() => sakura.remove(), 800);
+  }
+
+  // hiện thư
+  if (count >= 5) {
+    letter.classList.add("show");
+  }
+});
+</script>
+
+</body>
+</html>.sakura {
   position: fixed;
   width: 10px;
   height: 10px;
