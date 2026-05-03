@@ -199,6 +199,8 @@ cat.addEventListener("click", () => {
 
   let rect = cat.getBoundingClientRect();
 
+  bubble.style.top = (rect.top - 70) + "px";
+  bubble.style.left = (rect.left + rect.width/2 - bubble.offsetWidth/2) + "px";
   for (let i = 0; i < 20; i++) {
     let sakura = document.createElement("div");
     sakura.className = "sakura burst";
@@ -221,6 +223,9 @@ cat.addEventListener("click", () => {
   if (count >= 5) {
     letter.classList.add("show");
   }
+  setInterval(updateBubble, 100);
+  window.addEventListener("resize", updateBubble);
+window.addEventListener("scroll", updateBubble);
 });
 </script>
 
