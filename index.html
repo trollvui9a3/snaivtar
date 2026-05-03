@@ -6,13 +6,12 @@
 
 <title>bấm zô đi eiu</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
 
 <style>
 body {
   margin: 0;
   overflow: hidden;
-  height: 100vh;
 }
 
 /* nền */
@@ -21,7 +20,6 @@ body {
   inset: 0;
   background: url("bg.jpg") center/cover no-repeat;
   filter: blur(6px) brightness(0.8);
-  z-index: 0;
 }
 
 /* mèo */
@@ -30,42 +28,10 @@ body {
   top: 60%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: clamp(180px, 45vw, 320px);
+  width: 220px;
   cursor: pointer;
   z-index: 10;
   transition: 0.2s;
-}
-
-/* bong bóng */
-.bubble {
-  position: fixed;
-  background: white;
-  padding: 10px 15px;
-  border-radius: 20px;
-  font-family: 'Patrick Hand', cursive;
-  font-size: 16px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-  opacity: 0;
-  transform: translateY(-10px);
-  transition: 0.3s;
-  z-index: 15;
-  border: 2px solid black;
-}
-
-.bubble.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.bubble::after {
-  content: "";
-  position: absolute;
-  bottom: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-width: 12px;
-  border-style: solid;
-  border-color: white transparent transparent transparent;
 }
 
 /* thư */
@@ -74,25 +40,22 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) scale(0.8);
-  width: clamp(260px, 85vw, 600px);
-  height: clamp(180px, 50vh, 500px);
-  background: url("thu.png") center/cover no-repeat;
-  border-radius: 20px;
-  box-shadow: 0 0 40px rgba(0,0,0,0.6);
+  width: 80vw;
+  max-width: 400px;
+  height: 200px;
+  background: white;
+  border-radius: 15px;
 
   display: flex;
   justify-content: center;
   align-items: center;
   text-align: center;
 
-  padding: 20px;
   font-family: 'Patrick Hand', cursive;
-  font-size: clamp(14px, 4vw, 20px);
-
-  z-index: 20;
 
   opacity: 0;
   transition: 0.4s;
+  z-index: 20;
 }
 
 .letter.show {
@@ -102,6 +65,111 @@ body {
 
 /* hoa */
 .sakura {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  background: pink;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.fall {
+  animation: fall linear forwards;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+}
+
+.burst {
+  animation: burst 1s ease forwards;
+}
+
+@keyframes burst {
+  to {
+    transform: translate(var(--x), var(--y));
+    opacity: 0;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="bg"></div>
+
+<img src="cat.png" id="cat" class="cat">
+
+<div id="letter" class="letter">
+  Chúc mừng sinh nhật 🎉💖
+</div>
+
+<script>
+let count = 0;
+
+const cat = document.getElementById("cat");
+const letter = document.getElementById("letter");
+
+/* kiểm tra click */
+cat.addEventListener("click", function() {
+  console.log("click ok");
+
+  count++;
+
+  // animation mèo
+  cat.style.transform = "translate(-50%, -50%) scale(0.9)";
+  setTimeout(() => {
+    cat.style.transform = "translate(-50%, -50%) scale(1)";
+  }, 100);
+
+  // hoa bung
+  let rect = cat.getBoundingClientRect();
+
+  for (let i = 0; i < 15; i++) {
+    let sakura = document.createElement("div");
+    sakura.className = "sakura burst";
+
+    sakura.style.left = rect.left + rect.width/2 + "px";
+    sakura.style.top = rect.top + rect.height/2 + "px";
+
+    let x = (Math.random() - 0.5) * 200;
+    let y = (Math.random() - 0.5) * 200;
+
+    sakura.style.setProperty("--x", x + "px");
+    sakura.style.setProperty("--y", y + "px");
+
+    document.body.appendChild(sakura);
+
+    setTimeout(() => sakura.remove(), 1000);
+  }
+
+  // hiện thư
+  if (count >= 5) {
+    letter.classList.add("show");
+  }
+});
+
+/* hoa rơi nền */
+setInterval(() => {
+  let sakura = document.createElement("div");
+  sakura.className = "sakura fall";
+
+  sakura.style.left = Math.random() * window.innerWidth + "px";
+  sakura.style.top = "-10px";
+
+  sakura.style.animationDuration = (3 + Math.random() * 3) + "s";
+
+  document.body.appendChild(sakura);
+
+  setTimeout(() => sakura.remove(), 5000);
+}, 300);
+</script>
+
+</body>
+</html>.sakura {
   position: fixed;
   top: -20px;
   width: 12px;
