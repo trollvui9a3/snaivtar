@@ -2,7 +2,8 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<title>bấm zô đi vk iu</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday 🎂</title>
 
 <style>
 body {
@@ -18,38 +19,40 @@ body {
   background: url("bg.jpg") center/cover no-repeat;
   filter: blur(6px) brightness(0.8);
   z-index: 0;
+  pointer-events: none;
+}
+
+/* container fix mobile */
+.container {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* mèo */
 .cat {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 150px;
+  width: clamp(140px, 35vw, 220px);
   cursor: pointer;
   z-index: 10;
-  transition: 0.2s;
+  transition: transform 0.2s ease;
 }
 
-/* 🆕 bong bóng */
+/* bubble (fix mobile chuẩn) */
 .bubble {
-  position: fixed;
+  position: absolute;
+  top: -60px;
+  left: 50%;
+  transform: translateX(-50%);
+  
   background: white;
   padding: 8px 14px;
   border-radius: 20px;
   font-size: 14px;
+
+  white-space: nowrap;
   box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-
-  opacity: 0;
-  transform: translateY(-10px);
-  transition: 0.3s;
-  z-index: 15;
-}
-
-.bubble.show {
-  opacity: 1;
-  transform: translateY(0);
 }
 
 .bubble::after {
@@ -68,11 +71,10 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) scale(0);
-  width: 320px;
-  height: 220px;
+  width: clamp(260px, 80vw, 400px);
+  height: clamp(180px, 40vh, 250px);
   background: url("thu.png") center/cover no-repeat;
   border-radius: 20px;
-  box-shadow: 0 0 40px rgba(0,0,0,0.6);
 
   display: flex;
   justify-content: center;
@@ -80,7 +82,7 @@ body {
   text-align: center;
 
   padding: 20px;
-  font-size: 18px;
+  font-size: clamp(14px, 3.5vw, 18px);
 
   z-index: 20;
   transition: 0.4s;
@@ -108,25 +110,20 @@ body {
 
 @keyframes fall {
   from {
-    transform: translateY(-20px) rotate(0);
-    opacity: 1;
+    transform: translateY(-20px);
   }
   to {
-    transform: translateY(110vh) rotate(360deg);
+    transform: translateY(110vh);
     opacity: 0;
   }
 }
 
 /* hoa bung */
 .burst {
-  animation: burst 1s ease forwards;
+  animation: burst 0.8s ease forwards;
 }
 
 @keyframes burst {
-  from {
-    transform: translate(0,0);
-    opacity: 1;
-  }
   to {
     transform: translate(var(--x), var(--y));
     opacity: 0;
@@ -139,10 +136,13 @@ body {
 
 <div class="bg"></div>
 
-<img src="cat.png" class="cat" id="cat">
-
-<!-- 🆕 bong bóng -->
-<div id="bubble" class="bubble">Bấm tui đi 😳</div>
+<!-- 🆕 container fix mobile -->
+<div class="container">
+  <div style="position: relative;">
+    <img src="cat.png" class="cat" id="cat">
+    <div class="bubble" id="bubble">Bấm tui đi 😳</div>
+  </div>
+</div>
 
 <div class="letter" id="letter">
   Chúc mừng sinh nhật 🎉💖
@@ -157,75 +157,57 @@ const letter = document.getElementById("letter");
 const music = document.getElementById("music");
 const bubble = document.getElementById("bubble");
 
-/* 📍 vị trí bong bóng */
-function updateBubble() {
-  let rect = cat.getBoundingClientRect();
-  bubble.style.top = (rect.top - 60) + "px";
-  bubble.style.left = (rect.left + rect.width/2 - 50) + "px";
-}
-
-/* hiện bubble */
-window.onload = () => {
-  updateBubble();
-  bubble.classList.add("show");
-};
-
 /* hoa rơi */
 setInterval(() => {
   let sakura = document.createElement("div");
   sakura.className = "sakura fall";
 
   sakura.style.left = Math.random() * window.innerWidth + "px";
-  sakura.style.animationDuration = (6 + Math.random() * 5) + "s";
+  sakura.style.animationDuration = (5 + Math.random() * 3) + "s";
 
   document.body.appendChild(sakura);
-  setTimeout(() => sakura.remove(), 7000);
+  setTimeout(() => sakura.remove(), 6000);
 }, 400);
 
 /* click mèo */
 cat.addEventListener("click", () => {
   count++;
 
-  cat.style.transform = "translate(-50%, -50%) scale(0.9)";
+  cat.style.transform = "scale(0.9)";
   setTimeout(() => {
-    cat.style.transform = "translate(-50%, -50%) scale(1)";
-  }, 100);
+    cat.style.transform = "scale(1)";
+  }, 120);
 
-  updateBubble();
-
+  /* đổi text bubble */
   if (count === 1) bubble.innerText = "Ê nhẹ thôi 😠";
   if (count === 3) bubble.innerText = "Nữa đi 😏";
   if (count === 5) bubble.innerText = "Mở quà 💌";
 
   let rect = cat.getBoundingClientRect();
 
-  bubble.style.top = (rect.top - 70) + "px";
-  bubble.style.left = (rect.left + rect.width/2 - bubble.offsetWidth/2) + "px";
-  for (let i = 0; i < 20; i++) {
+  /* hoa bung */
+  for (let i = 0; i < 12; i++) {
     let sakura = document.createElement("div");
     sakura.className = "sakura burst";
 
     sakura.style.left = rect.left + rect.width/2 + "px";
     sakura.style.top = rect.top + rect.height/2 + "px";
 
-    let x = (Math.random() - 0.5) * 300;
-    let y = (Math.random() - 0.5) * 300;
+    let x = (Math.random() - 0.5) * 140;
+    let y = (Math.random() - 0.5) * 140;
 
     sakura.style.setProperty("--x", x + "px");
     sakura.style.setProperty("--y", y + "px");
 
     document.body.appendChild(sakura);
-    setTimeout(() => sakura.remove(), 1000);
+    setTimeout(() => sakura.remove(), 800);
   }
 
-  music.play();
+  music.play().catch(()=>{});
 
   if (count >= 5) {
     letter.classList.add("show");
   }
-  setInterval(updateBubble, 100);
-  window.addEventListener("resize", updateBubble);
-window.addEventListener("scroll", updateBubble);
 });
 </script>
 
