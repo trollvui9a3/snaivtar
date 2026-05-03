@@ -2,17 +2,15 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 
 <title>bấm zô đi eiu</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
 
 <style>
 body {
   margin: 0;
   overflow: hidden;
-  font-family: 'Patrick Hand', cursive;
+  font-family: Arial;
 }
 
 /* nền */
@@ -20,9 +18,8 @@ body {
   position: fixed;
   inset: 0;
   background: url("bg.jpg") center/cover no-repeat;
-  filter: blur(6px) brightness(0.8);
-  z-index: 0;
-  pointer-events: none; /* 🔥 fix mobile */
+  filter: blur(5px);
+  pointer-events: none; /* 🔥 quan trọng */
 }
 
 /* mèo */
@@ -31,42 +28,9 @@ body {
   top: 60%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: clamp(180px, 40vw, 260px);
-  z-index: 999;
+  width: 220px;
+  z-index: 10;
   cursor: pointer;
-  transition: transform 0.15s;
-  touch-action: manipulation; /* 🔥 fix mobile */
-}
-
-/* bong bóng */
-.bubble {
-  position: fixed;
-  background: white;
-  padding: 10px 15px;
-  border-radius: 20px;
-  border: 2px solid black;
-  font-size: 16px;
-
-  opacity: 0;
-  transform: translateY(-10px);
-  transition: 0.3s;
-
-  z-index: 998;
-}
-
-.bubble.show {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.bubble::after {
-  content: "";
-  position: absolute;
-  bottom: -12px;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 12px solid transparent;
-  border-top-color: white;
 }
 
 /* thư */
@@ -74,24 +38,19 @@ body {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) scale(0.9);
+  transform: translate(-50%, -50%) scale(0.8);
 
-  width: clamp(260px, 85vw, 500px);
+  width: 300px;
   height: 200px;
-
   background: white;
-  border-radius: 20px;
 
   display: flex;
-  justify-content: center;
   align-items: center;
-  text-align: center;
-
-  padding: 20px;
+  justify-content: center;
 
   opacity: 0;
-  transition: 0.4s;
-  z-index: 1000;
+  transition: 0.3s;
+  z-index: 20;
 }
 
 .letter.show {
@@ -102,37 +61,19 @@ body {
 /* hoa */
 .sakura {
   position: fixed;
-  top: -20px;
   width: 10px;
   height: 10px;
   background: pink;
   border-radius: 50%;
   pointer-events: none;
-  z-index: 10;
 }
 
-/* rơi */
-.fall {
-  animation: fall linear forwards;
-}
-
-@keyframes fall {
-  to {
-    transform: translateY(110vh);
-    opacity: 0;
-  }
-}
-
-/* bung */
+/* hoa bung */
 .burst {
-  animation: burst 0.8s ease forwards;
+  animation: burst 0.8s forwards;
 }
 
 @keyframes burst {
-  from {
-    transform: translate(0,0);
-    opacity: 1;
-  }
   to {
     transform: translate(var(--x), var(--y));
     opacity: 0;
@@ -147,128 +88,56 @@ body {
 
 <img src="cat.png" id="cat" class="cat">
 
-<div id="bubble" class="bubble">Bấm tui đi 😳</div>
-
 <div id="letter" class="letter">
   💖 Chúc mừng sinh nhật 💖
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+let count = 0;
 
-  const cat = document.getElementById("cat");
-  const bubble = document.getElementById("bubble");
-  const letter = document.getElementById("letter");
+const cat = document.getElementById("cat");
+const letter = document.getElementById("letter");
 
-  let count = 0;
+/* CLICK HANDLER */
+function handleTap(e) {
+  e.preventDefault(); // 🔥 fix mobile
 
-  function updateBubble() {
-    const rect = cat.getBoundingClientRect();
-    bubble.style.top = (rect.top - 70) + "px";
-    bubble.style.left = (rect.left + rect.width/2 - 60) + "px";
+  count++;
+
+  // mèo co lại
+  cat.style.transform = "translate(-50%, -50%) scale(0.9)";
+  setTimeout(() => {
+    cat.style.transform = "translate(-50%, -50%) scale(1)";
+  }, 100);
+
+  // lấy vị trí mèo
+  let rect = cat.getBoundingClientRect();
+
+  // hoa bung
+  for (let i = 0; i < 10; i++) {
+    let s = document.createElement("div");
+    s.className = "sakura burst";
+
+    s.style.left = rect.left + rect.width/2 + "px";
+    s.style.top = rect.top + rect.height/2 + "px";
+
+    s.style.setProperty("--x", (Math.random()-0.5)*200 + "px");
+    s.style.setProperty("--y", (Math.random()-0.5)*200 + "px");
+
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 800);
   }
 
-  window.addEventListener("load", () => {
-    updateBubble();
-    bubble.classList.add("show");
-  });
-
-  /* hoa rơi */
-  setInterval(() => {
-    const sakura = document.createElement("div");
-    sakura.className = "sakura fall";
-
-    sakura.style.left = Math.random() * document.documentElement.clientWidth + "px";
-    sakura.style.animationDuration = (4 + Math.random() * 3) + "s";
-
-    document.body.appendChild(sakura);
-    setTimeout(() => sakura.remove(), 6000);
-  }, 300);
-
-  function handleClick() {
-    count++;
-    console.log("click ok");
-
-    /* animation mèo */
-    cat.style.transform = "translate(-50%, -50%) scale(0.9)";
-    setTimeout(() => {
-      cat.style.transform = "translate(-50%, -50%) scale(1)";
-    }, 100);
-
-    updateBubble();
-
-    if (count === 1) bubble.innerText = "Ê nhẹ thôi 😠";
-    if (count === 3) bubble.innerText = "Nữa đi 😏";
-    if (count === 5) bubble.innerText = "Mở quà 💌";
-
-    /* hoa bung */
-    const rect = cat.getBoundingClientRect();
-
-    for (let i = 0; i < 12; i++) {
-      const sakura = document.createElement("div");
-      sakura.className = "sakura burst";
-
-      sakura.style.left = rect.left + rect.width/2 + "px";
-      sakura.style.top = rect.top + rect.height/2 + "px";
-
-      sakura.style.setProperty("--x", (Math.random()-0.5)*200 + "px");
-      sakura.style.setProperty("--y", (Math.random()-0.5)*200 + "px");
-
-      document.body.appendChild(sakura);
-      setTimeout(() => sakura.remove(), 800);
-    }
-
-    if (count >= 5) {
-      letter.classList.add("show");
-    }
+  // hiện thư
+  if (count >= 5) {
+    letter.classList.add("show");
   }
+}
 
-  /* 🔥 fix mobile + pc */
-  cat.addEventListener("click", handleClick);
-  cat.addEventListener("touchstart", handleClick);
+/* 🔥 MOBILE + PC */
+cat.addEventListener("touchstart", handleTap, { passive: false });
+cat.addEventListener("click", handleTap);
 
-});
-</script>
-
-</body>
-</html>
-  cat.addEventListener("click", () => {
-    console.log("✅ click nhận");
-
-    count++;
-
-    // animation mèo
-    cat.style.transform = "translate(-50%, -50%) scale(0.9)";
-    setTimeout(() => {
-      cat.style.transform = "translate(-50%, -50%) scale(1)";
-    }, 100);
-
-    // hoa bung
-    let rect = cat.getBoundingClientRect();
-
-    for (let i = 0; i < 10; i++) {
-      let sakura = document.createElement("div");
-      sakura.className = "sakura burst";
-
-      sakura.style.left = rect.left + rect.width/2 + "px";
-      sakura.style.top = rect.top + rect.height/2 + "px";
-
-      sakura.style.setProperty("--x", (Math.random()-0.5)*200 + "px");
-      sakura.style.setProperty("--y", (Math.random()-0.5)*200 + "px");
-
-      document.body.appendChild(sakura);
-
-      setTimeout(() => sakura.remove(), 800);
-    }
-
-    // hiện thư
-    if (count >= 5) {
-      letter.classList.add("show");
-    }
-
-  });
-
-});
 </script>
 
 </body>
