@@ -12,6 +12,7 @@
 body {
   margin: 0;
   overflow: hidden;
+  height: 100vh;
 }
 
 /* nền */
@@ -35,7 +36,7 @@ body {
   transition: 0.2s;
 }
 
-/* bong bóng manga */
+/* bong bóng */
 .bubble {
   position: fixed;
   background: white;
@@ -72,7 +73,7 @@ body {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) scale(0);
+  transform: translate(-50%, -50%) scale(0.8);
   width: clamp(260px, 85vw, 600px);
   height: clamp(180px, 50vh, 500px);
   background: url("thu.png") center/cover no-repeat;
@@ -89,15 +90,155 @@ body {
   font-size: clamp(14px, 4vw, 20px);
 
   z-index: 20;
+
+  opacity: 0;
   transition: 0.4s;
 }
 
 .letter.show {
+  opacity: 1;
   transform: translate(-50%, -50%) scale(1);
 }
 
 /* hoa */
 .sakura {
+  position: fixed;
+  top: -20px;
+  width: 12px;
+  height: 12px;
+  background: pink;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.fall {
+  animation: fall linear forwards;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(110vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.burst {
+  animation: burst 1s ease forwards;
+}
+
+@keyframes burst {
+  from {
+    transform: translate(0,0);
+    opacity: 1;
+  }
+  to {
+    transform: translate(var(--x), var(--y));
+    opacity: 0;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="bg"></div>
+
+<img src="cat.png" class="cat" id="cat">
+
+<div class="bubble" id="bubble">
+  Bấm tui đi 😳
+</div>
+
+<div class="letter" id="letter">
+  Chúc eiu sinh nhật vv nhé 💖<br>
+  I love you 😘
+</div>
+
+<audio id="music" src="nhac.mp3"></audio>
+
+<script>
+let count = 0;
+
+const cat = document.getElementById("cat");
+const bubble = document.getElementById("bubble");
+const letter = document.getElementById("letter");
+const music = document.getElementById("music");
+
+/* cập nhật bong bóng */
+function updateBubble() {
+  let rect = cat.getBoundingClientRect();
+
+  bubble.style.top = (rect.top - 80) + "px";
+  bubble.style.left = (rect.left + rect.width/2 - 60) + "px";
+}
+
+/* load */
+window.onload = () => {
+  updateBubble();
+  bubble.classList.add("show");
+};
+
+/* hoa rơi full time */
+setInterval(() => {
+  let sakura = document.createElement("div");
+  sakura.className = "sakura fall";
+
+  sakura.style.left = Math.random() * document.documentElement.clientWidth + "px";
+  sakura.style.animationDuration = (5 + Math.random() * 4) + "s";
+
+  document.body.appendChild(sakura);
+
+  setTimeout(() => sakura.remove(), 6000);
+}, 400);
+
+/* click mèo */
+cat.addEventListener("click", () => {
+  count++;
+
+  cat.style.transform = "translate(-50%, -50%) scale(0.9)";
+  setTimeout(() => {
+    cat.style.transform = "translate(-50%, -50%) scale(1)";
+  }, 100);
+
+  updateBubble();
+
+  if (count === 1) bubble.innerText = "Ê nhẹ thôi 😠";
+  if (count === 3) bubble.innerText = "Nữa đi nữa đi 😏";
+  if (count === 5) bubble.innerText = "Mở quà nè 💌";
+
+  let rect = cat.getBoundingClientRect();
+
+  for (let i = 0; i < 20; i++) {
+    let sakura = document.createElement("div");
+    sakura.className = "sakura burst";
+
+    sakura.style.left = rect.left + rect.width/2 + "px";
+    sakura.style.top = rect.top + rect.height/2 + "px";
+
+    let x = (Math.random() - 0.5) * 300;
+    let y = (Math.random() - 0.5) * 300;
+
+    sakura.style.setProperty("--x", x + "px");
+    sakura.style.setProperty("--y", y + "px");
+
+    document.body.appendChild(sakura);
+
+    setTimeout(() => sakura.remove(), 1000);
+  }
+
+  if (count >= 5) {
+    letter.classList.add("show");
+  }
+
+  if (count === 5) {
+    music.play();
+  }
+});
+</script>
+
+</body>
+</html>.sakura {
   position: fixed;
   width: 10px;
   height: 10px;
