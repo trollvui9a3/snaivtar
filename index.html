@@ -10,7 +10,8 @@ body {
   overflow: hidden;
   font-family: Arial;
 }
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat&display=swap" rel="stylesheet">
 /* nền */
 .bg {
   position: fixed;
@@ -26,7 +27,7 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 250px;
+  width: clamp(180px, 45vw, 320px);
   cursor: pointer;
   z-index: 10;
   transition: 0.5s;
@@ -38,8 +39,8 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) scale(0);
-  width: 600px;
-  height: 500px;
+  width: clamp(260px, 85vw, 600px);
+  height: clamp(180px, 50vh, 500px);
   background: url("thu.png") center/cover no-repeat;
   border-radius: 20px;
   box-shadow: 0 0 40px rgba(0,0,0,0.6);
@@ -50,7 +51,8 @@ body {
   text-align: center;
 
   padding: 20px;
-  font-size: 18px;
+  font-family: 'Patrick Hand', cursive;
+  font-size: clamp(14px, 4vw, 20px);
 
   z-index: 20;
   transition: 0.4s;
@@ -101,6 +103,42 @@ body {
     transform: translate(var(--x), var(--y));
     opacity: 0;
   }
+  .bubble {
+  position: fixed;
+
+  background: white;
+  padding: 10px 15px;
+  border-radius: 20px;
+
+  font-family: 'Patrick Hand', cursive;
+  font-size: 16px;
+
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: 0.3s;
+
+  z-index: 15;
+}
+
+.bubble.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* đuôi manga */
+.bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  border-width: 12px;
+  border-style: solid;
+  border-color: white transparent transparent transparent;
+  }
 }
 </style>
 </head>
@@ -110,6 +148,9 @@ body {
 <div class="bg"></div>
 
 <img src="cat.png" class="cat" id="cat">
+  <div class="bubble" id="bubble">
+  Bấm tui đi 😳
+  </div>
 
 <div class="letter" id="letter">
   Chúc eiu sinh nhật vv nhé:>.Năm nay a ko thể tặng quà cho iu đc rồi:<<. tuổi mới iu phải bt giữ gìn sức khỏe nhe, chúc iu mãi mãi xinh đẹp:>.I love you 😘
@@ -117,10 +158,24 @@ body {
 <audio id="music" src="nhac.mp3"></audio>
 <script>
 let count = 0;
+const bubble = document.getElementById("bubble");
 const cat = document.getElementById("cat");
 const letter = document.getElementById("letter");
 const music = document.getElementById("music");
+function updateBubble() {
+  let rect = cat.getBoundingClientRect();
+  window.onload = () => {
+  updateBubble();
+  bubble.classList.add("show");
+};
+  updateBubble();
 
+if (count === 1) bubble.innerText = "Ê nhẹ thôi 😠";
+if (count === 3) bubble.innerText = "Nữa đi nữa đi 😏";
+if (count === 5) bubble.innerText = "Mở quà nè 💌";
+  bubble.style.top = (rect.top - 70) + "px";
+  bubble.style.left = (rect.left + rect.width/2 - 60) + "px";
+  }
 // 🌸 1. HOA RƠI FULL TIME (NHẸ)
 setInterval(() => {
   let sakura = document.createElement("div");
